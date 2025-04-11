@@ -2,7 +2,15 @@ import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Path2D;
 import java.util.Random;
-import javax.swing.JComponent;
+import javax.swing.*;
+
+/**
+ * Class to generate a triangular fractal. User specifies the max number of generations
+ *
+ * @author Layla Shihab
+ * @version April 11 2025
+ *
+ */
 
 public class TriangularFractal extends JComponent {
      Graphics2D g2;
@@ -11,8 +19,29 @@ public class TriangularFractal extends JComponent {
      double d = (1/(2*Math.sqrt(3)))*l; // distance from centroid to midpoint of one segment
      double r = h -d;
      Path2D.Double initializer;
-     int maxGen = 5;
+     static int maxGen = -1;
      Random random = new Random();
+
+    public static void main(String[] args) {
+        while (maxGen == -1) {
+            try {
+                maxGen = Integer.parseInt(JOptionPane.showInputDialog(null, "Enter a number of generations:"));
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(null, "Please enter a number");
+            }
+        }
+        // sets up frame
+        JFrame frame = new JFrame();
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.setSize(600, 600);
+        frame.setResizable(true);
+        frame.setLocationRelativeTo(null); //centers frame on screen
+
+        frame.add(new TriangularFractal());
+
+        frame.setVisible(true);
+
+    }
 
      public void paintComponent(Graphics g) {
          g2 = (Graphics2D) g;
@@ -53,8 +82,7 @@ public class TriangularFractal extends JComponent {
 
      public void nextGen(int generation) {
 
-         if (generation == maxGen) {
-             //g2.scale(Math.pow(3,maxGen), Math.pow(3,maxGen));
+         if (generation == maxGen-1) {
              return;
          }
 
