@@ -1,14 +1,16 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Path2D;
+import java.util.ArrayList;
 
 public class DragonCurveFractal extends JComponent {
     Graphics2D g2;
     Path2D.Double initializer;
     private static JFrame frame;
 
-    int width = 100;
-    int maxGen = 2;
+    static int sideLength;
+    static int maxGen;
 
     public DragonCurveFractal() {
     }
@@ -20,6 +22,9 @@ public class DragonCurveFractal extends JComponent {
         frame.setSize(600, 600);
         frame.setResizable(true);
         frame.setLocationRelativeTo(null); //centers frame on screen
+
+        maxGen = 2;
+        sideLength = 256;
 
         frame.add(new DragonCurveFractal());
 
@@ -35,16 +40,50 @@ public class DragonCurveFractal extends JComponent {
         g2.setStroke(new BasicStroke(2));
         g2.setColor(Color.PINK);
 
-        int centerX = getWidth()/2;
-        int centerY = getHeight()/2;
+        int[] xPoints;
+        int[] yPoints;
 
-        // Draw first line
-        g2.drawLine(centerX-(width/2), centerY, centerX+(width/2), centerY);
+        // points to create initializer
+        xPoints = new int[] {0, sideLength/2, sideLength};
+        yPoints = new int[] {0, sideLength/2, 0};
+
+        // sets coordinate origin to first point
+        g2.translate(getWidth()/2-sideLength/2, getHeight()/2);
+
+        // stores two lines that form a 90 degree angle to manipulated to form curve
+        initializer = new Path2D.Double();
+
+        // Move to the first point
+        initializer.moveTo(xPoints[0], yPoints[0]);
+
+        // Draw lines to the remaining points
+        for (int i = 1; i < xPoints.length; i++) {
+            initializer.lineTo(xPoints[i], yPoints[i]);
+        }
+
+        // rotate and scale
+        g2.rotate(Math.PI / 4);
+        g2.scale(Math.sqrt(2)/2f,Math.sqrt(2)/2f);
+
+        // draw half of next gen
+        g2.draw(initializer);
+
+        // move origin
+        g2.rotate(-Math.PI / 4);
+        g2.scale(2/Math.sqrt(2),2/Math.sqrt(2));
+        g2.translate(sideLength, 0);
+        g2.scale(Math.sqrt(2)/2f,Math.sqrt(2)/2f);
+        g2.rotate(Math.PI / 4);
+
+        // rotate and draw second half of next gen
+        g2.rotate(Math.PI/2);
+        g2.draw(initializer);
+
+        // move origin back to first point
+        g2.rotate(-3*Math.PI / 4);
+        g2.scale(2/Math.sqrt(2),2/Math.sqrt(2));
+        g2.translate(-sideLength, 0);
+
     }
-
-    public void drawNext(int gen){
-
-    }
-
 
 }

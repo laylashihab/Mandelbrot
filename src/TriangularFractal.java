@@ -7,6 +7,8 @@ import javax.swing.*;
 /**
  * Class to generate a triangular fractal. User specifies the max number of generations
  *
+ * NOTE: this could be greatly improved by simply moving each triangle from center out a distance of d and rotating g2 accordingly.
+ *
  * @author Layla Shihab
  * @version April 11 2025
  *
