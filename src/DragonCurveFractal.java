@@ -1,8 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.geom.AffineTransform;
 import java.awt.geom.Path2D;
-import java.util.ArrayList;
 
 public class DragonCurveFractal extends JComponent {
     Graphics2D g2;
@@ -10,7 +8,7 @@ public class DragonCurveFractal extends JComponent {
     private static JFrame frame;
 
     static int sideLength;
-    static int maxGen;
+    static int maxGen = -1;
 
     public DragonCurveFractal() {
     }
@@ -23,7 +21,13 @@ public class DragonCurveFractal extends JComponent {
         frame.setResizable(true);
         frame.setLocationRelativeTo(null); //centers frame on screen
 
-        maxGen = 2;
+        while (maxGen == -1) {
+            try {
+                maxGen = Integer.parseInt(JOptionPane.showInputDialog(null, "Enter a number of generations:"));
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(null, "Please enter a number");
+            }
+        }
         sideLength = 256;
 
         frame.add(new DragonCurveFractal());
@@ -37,7 +41,7 @@ public class DragonCurveFractal extends JComponent {
         g2 = (Graphics2D) g;
 
         // sets coordinate origin to center
-        g2.setStroke(new BasicStroke(2));
+        g2.setStroke(new BasicStroke(4));
         g2.setColor(Color.PINK);
 
         int[] xPoints;
@@ -61,12 +65,21 @@ public class DragonCurveFractal extends JComponent {
             initializer.lineTo(xPoints[i], yPoints[i]);
         }
 
+        nextGeneration(1);
+
+    }
+
+    public void nextGeneration(int gen){
         // rotate and scale
         g2.rotate(Math.PI / 4);
         g2.scale(Math.sqrt(2)/2f,Math.sqrt(2)/2f);
 
-        // draw half of next gen
-        g2.draw(initializer);
+        if (gen< maxGen) {
+            nextGeneration(gen+1);
+        } else {
+            // draw half of next gen
+            g2.draw(initializer);
+        }
 
         // move origin
         g2.rotate(-Math.PI / 4);
@@ -77,13 +90,17 @@ public class DragonCurveFractal extends JComponent {
 
         // rotate and draw second half of next gen
         g2.rotate(Math.PI/2);
-        g2.draw(initializer);
+
+        if (gen< maxGen) {
+            nextGeneration(gen+1);
+        } else {
+            g2.draw(initializer);
+        }
 
         // move origin back to first point
         g2.rotate(-3*Math.PI / 4);
         g2.scale(2/Math.sqrt(2),2/Math.sqrt(2));
         g2.translate(-sideLength, 0);
-
     }
 
 }
