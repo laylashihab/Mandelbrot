@@ -10,7 +10,7 @@ public class DragonCurveFractal extends JComponent {
     private static JFrame frame;
 
     static int sideLength;
-    static int maxGen = 1;
+    static int maxGen = 0;
 
     static Button nextGenButton;
     static Button lastGenButton;
@@ -19,16 +19,22 @@ public class DragonCurveFractal extends JComponent {
         @Override
         public void actionPerformed(ActionEvent e) {
             if (e.getSource() == (nextGenButton)) {
-                maxGen++;
-                nextGeneration(1);
-                frame.repaint();
-                frame.revalidate();
+                if (maxGen < 16) {
+                    maxGen++;
+                    nextGeneration(1);
+                    frame.repaint();
+                    frame.revalidate();
+                } else {
+                    JOptionPane.showMessageDialog(null, "Generation Limit Reached");
+                }
             }
             if (e.getSource() == (lastGenButton)) {
-                maxGen--;
-                nextGeneration(1);
-                frame.repaint();
-                frame.revalidate();
+                if (maxGen > 0) {
+                    maxGen--;
+                    nextGeneration(1);
+                    frame.repaint();
+                    frame.revalidate();
+                }
             }
         }
     };
@@ -94,6 +100,10 @@ public class DragonCurveFractal extends JComponent {
     }
 
     public static void nextGeneration(int gen) {
+        if (maxGen == 0){
+            g2.draw(initializer);
+            return;
+        }
         // rotate and scale
         g2.rotate(Math.PI / 4);
         g2.scale(Math.sqrt(2) / 2f, Math.sqrt(2) / 2f);
