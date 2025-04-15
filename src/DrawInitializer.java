@@ -18,24 +18,19 @@ public class DrawInitializer extends JComponent implements Runnable {
 
     DrawInitializer paint; // variable of the type SimplePaint
 
-    Path2D initializer;
-    int sideLength;
-    int[] startEndPoints;
+    static Path2D.Double initializer;
+    static int sideLength;
 
     private int maxGen;
 
     public DrawInitializer() {
         initializer = new Path2D.Double();
-        startEndPoints = new int[4];
 
         addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent e) {
                 if (initializer.getCurrentPoint() == null) {
                     startX = e.getX();
                     startY = e.getY();
-
-                    startEndPoints[0] = startX;
-                    startEndPoints[1] = startY;
 
                     initializer.moveTo(startX, startY);
                 }
@@ -92,13 +87,10 @@ public class DrawInitializer extends JComponent implements Runnable {
         // action listener to store new initializer information
         enterButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                // stores end points
-                startEndPoints[2] = startX;
-                startEndPoints[3] = startY;
-
-                // calculates sidelength
-                sideLength = (int)(Math.sqrt(
-                        Math.pow(startEndPoints[2]-startEndPoints[0],2)+Math.pow(startEndPoints[3]-startEndPoints[1],2)));
+                // gets sideLength
+                sideLength = initializer.getBounds().width;
+                SwingUtilities.invokeLater(new DragonCurveFractal());
+                frame.dispose();
             }
         });
 
@@ -122,6 +114,8 @@ public class DrawInitializer extends JComponent implements Runnable {
                 for (int i = 1; i < xPoints.length; i++) {
                     initializer.lineTo(xPoints[i], yPoints[i]);
                 }
+                SwingUtilities.invokeLater(new DragonCurveFractal());
+                frame.dispose();
             }
         });
 
@@ -129,6 +123,7 @@ public class DrawInitializer extends JComponent implements Runnable {
         panel.add(enterButton);
         panel.add(useOriginalDragonCurveInitializer);
         content.add(panel, BorderLayout.NORTH);
+
 
     }
 
@@ -154,7 +149,11 @@ public class DrawInitializer extends JComponent implements Runnable {
 
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(new DrawInitializer());
+    public static Path2D.Double getInitializer(){
+        return initializer;
+    }
+
+    public static int getSideLength(){
+        return sideLength;
     }
 }

@@ -4,18 +4,22 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.Path2D;
 
-public class DragonCurveFractal extends JComponent {
+public class DragonCurveFractal extends JComponent implements Runnable {
     static Graphics2D g2;
     static Path2D.Double initializer;
-    private static JFrame frame;
+    DrawInitializer newIntializer;
+    private JFrame frame;
 
     static int sideLength;
     static int maxGen = 0;
 
-    static Button nextGenButton;
-    static Button lastGenButton;
+    int[] xPoints;
+    int[] yPoints;
 
-    static ActionListener actionListener = new ActionListener() {
+    Button nextGenButton;
+    Button lastGenButton;
+
+    ActionListener actionListener = new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
             if (e.getSource() == (nextGenButton)) {
@@ -43,6 +47,10 @@ public class DragonCurveFractal extends JComponent {
     }
 
     public static void main(String[] args) {
+        SwingUtilities.invokeLater(new DrawInitializer());
+    }
+
+    public void run() {
         // sets up frame
         frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -59,13 +67,13 @@ public class DragonCurveFractal extends JComponent {
         content.add(lastGenButton);
         frame.add(content, BorderLayout.NORTH);
 
-        sideLength = 256;
+        //sideLength = 256;
+        sideLength = DrawInitializer.getSideLength();
 
         frame.add(new DragonCurveFractal());
 
         frame.setVisible(true);
         frame.repaint();
-
     }
 
     public void paintComponent(Graphics g) {
@@ -75,8 +83,6 @@ public class DragonCurveFractal extends JComponent {
         g2.setStroke(new BasicStroke(5));
         g2.setColor(Color.PINK);
 
-        int[] xPoints;
-        int[] yPoints;
 
         // points to create initializer
         xPoints = new int[]{0, sideLength / 2, sideLength};
@@ -85,7 +91,9 @@ public class DragonCurveFractal extends JComponent {
         // sets coordinate origin to first point
         g2.translate(getWidth() / 2 - sideLength / 2, getHeight() / 2);
 
-        // stores two lines that form a 90 degree angle to manipulated to form curve
+        initializer = DrawInitializer.getInitializer();
+        /*
+        // stores two lines that form a 90-degree angle to manipulated to form curve
         initializer = new Path2D.Double();
 
         // Move to the first point
@@ -95,12 +103,13 @@ public class DragonCurveFractal extends JComponent {
         for (int i = 1; i < xPoints.length; i++) {
             initializer.lineTo(xPoints[i], yPoints[i]);
         }
+        */
 
         nextGeneration(1);
     }
 
-    public static void nextGeneration(int gen) {
-        if (maxGen == 0){
+    public void nextGeneration(int gen) {
+        if (maxGen == 0) {
             g2.draw(initializer);
             return;
         }
