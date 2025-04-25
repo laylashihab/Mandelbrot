@@ -79,9 +79,11 @@ public class SierpinskiTriangle extends JComponent implements Runnable {
         content.add(lastGenButton);
         frame.add(content, BorderLayout.NORTH);
 
-        hausdorff = new JLabel("");
-        hausdorff.setFont(new Font("Serif", Font.BOLD, 20));
-        frame.add(hausdorff, BorderLayout.SOUTH);
+        JPanel info = new JPanel();
+        hausdorff = new JLabel();
+        hausdorff.setFont(new Font("Courier", Font.PLAIN, 20));
+        info.add(hausdorff);
+        frame.add(info, BorderLayout.SOUTH);
 
         frame.add(new SierpinskiTriangle(), BorderLayout.CENTER);
 

@@ -7,7 +7,6 @@ import java.awt.geom.Path2D;
 public class DragonCurveFractal extends JComponent implements Runnable {
     static Graphics2D g2;
     static Path2D.Double initializer;
-    DrawInitializer newIntializer;
     private JFrame frame;
 
     static int sideLength;
@@ -29,7 +28,9 @@ public class DragonCurveFractal extends JComponent implements Runnable {
             if (e.getSource() == (nextGenButton)) {
                 if (maxGen < 16) {
                     maxGen++;
-                    nextGeneration(1);
+                    hausdorff.setText(String.format("Hausdorff Dimension: log %.2f / log %.2f = %.4f",
+                            Math.pow(2, maxGen+1), Math.pow(Math.sqrt(2),maxGen+1),
+                            Math.log(Math.pow(2, maxGen+1))/Math.log(Math.pow(Math.sqrt(2),maxGen+1))));
                     frame.repaint();
                     frame.revalidate();
                 } else {
@@ -39,7 +40,6 @@ public class DragonCurveFractal extends JComponent implements Runnable {
             if (e.getSource() == (lastGenButton)) {
                 if (maxGen > 0) {
                     maxGen--;
-                    nextGeneration(1);
                     frame.repaint();
                     frame.revalidate();
                 }
@@ -72,17 +72,14 @@ public class DragonCurveFractal extends JComponent implements Runnable {
         frame.add(content, BorderLayout.NORTH);
 
         JPanel info = new JPanel();
-        // calculates the Hausdorf dimension
-        System.out.println(Math.log(n));
-        System.out.println(Math.log(scaleFactor));
         hausdorff = new JLabel();
+        hausdorff.setFont(new Font("Courier", Font.PLAIN, 20));
         info.add(hausdorff);
         frame.add(info, BorderLayout.SOUTH);
 
         //sideLength = 256;
         sideLength = DrawInitializer.getSideLength();
         scaleFactor = DrawInitializer.getScaleFactor();
-        System.out.println(sideLength);
 
         frame.add(new DragonCurveFractal());
 
