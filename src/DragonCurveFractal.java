@@ -12,12 +12,16 @@ public class DragonCurveFractal extends JComponent implements Runnable {
 
     static int sideLength;
     static int maxGen = 0;
+    static double scaleFactor;
 
     int[] xPoints;
     int[] yPoints;
 
     Button nextGenButton;
     Button lastGenButton;
+    JLabel hausdorff;
+
+    int n = 2; // number of self-similar objects
 
     ActionListener actionListener = new ActionListener() {
         @Override
@@ -67,8 +71,18 @@ public class DragonCurveFractal extends JComponent implements Runnable {
         content.add(lastGenButton);
         frame.add(content, BorderLayout.NORTH);
 
+        JPanel info = new JPanel();
+        // calculates the Hausdorf dimension
+        System.out.println(Math.log(n));
+        System.out.println(Math.log(scaleFactor));
+        hausdorff = new JLabel();
+        info.add(hausdorff);
+        frame.add(info, BorderLayout.SOUTH);
+
         //sideLength = 256;
         sideLength = DrawInitializer.getSideLength();
+        scaleFactor = DrawInitializer.getScaleFactor();
+        System.out.println(sideLength);
 
         frame.add(new DragonCurveFractal());
 
@@ -92,18 +106,6 @@ public class DragonCurveFractal extends JComponent implements Runnable {
         g2.translate(getWidth() / 2 - sideLength / 2, getHeight() / 2);
 
         initializer = DrawInitializer.getInitializer();
-        /*
-        // stores two lines that form a 90-degree angle to manipulated to form curve
-        initializer = new Path2D.Double();
-
-        // Move to the first point
-        initializer.moveTo(xPoints[0], yPoints[0]);
-
-        // Draw lines to the remaining points
-        for (int i = 1; i < xPoints.length; i++) {
-            initializer.lineTo(xPoints[i], yPoints[i]);
-        }
-        */
 
         nextGeneration(1);
     }
@@ -115,7 +117,7 @@ public class DragonCurveFractal extends JComponent implements Runnable {
         }
         // rotate and scale
         g2.rotate(Math.PI / 4);
-        g2.scale(Math.sqrt(2) / 2f, Math.sqrt(2) / 2f);
+        g2.scale(scaleFactor, scaleFactor);
 
         if (gen < maxGen) {
             nextGeneration(gen + 1);
@@ -126,9 +128,9 @@ public class DragonCurveFractal extends JComponent implements Runnable {
 
         // move origin
         g2.rotate(-Math.PI / 4);
-        g2.scale(2 / Math.sqrt(2), 2 / Math.sqrt(2));
+        g2.scale(1/scaleFactor, 1/scaleFactor);
         g2.translate(sideLength, 0);
-        g2.scale(Math.sqrt(2) / 2f, Math.sqrt(2) / 2f);
+        g2.scale(scaleFactor, scaleFactor);
         g2.rotate(Math.PI / 4);
 
         // rotate and draw second half of next gen
@@ -138,13 +140,12 @@ public class DragonCurveFractal extends JComponent implements Runnable {
             nextGeneration(gen + 1);
         } else {
             g2.draw(initializer);
+            n *=2;
         }
 
         // move origin back to first point
         g2.rotate(-3 * Math.PI / 4);
-        g2.scale(2 / Math.sqrt(2), 2 / Math.sqrt(2));
+        g2.scale(1/scaleFactor, 1/scaleFactor);
         g2.translate(-sideLength, 0);
     }
-
-
 }

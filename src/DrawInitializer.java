@@ -1,6 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Path2D;
 import java.util.ArrayList;
 
@@ -20,6 +21,10 @@ public class DrawInitializer extends JComponent implements Runnable {
 
     static Path2D.Double initializer;
     static int sideLength;
+    static double scaleFactor;
+
+    double xf;
+    double yf;
 
     private int maxGen;
 
@@ -87,8 +92,39 @@ public class DrawInitializer extends JComponent implements Runnable {
         // action listener to store new initializer information
         enterButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                // gets sideLength
+                xf = initializer.getCurrentPoint().getX();
+                yf = initializer.getCurrentPoint().getY();
+
+                // rotates the drawn initializer to make the two end points lie on the x-axis
+                double theta = Math.atan((yf)/(xf));
+                System.out.printf("xf: %f\n", xf);
+                System.out.printf("yf: %f\n", yf);
+                System.out.println(theta);
+                if (yf<0){
+                    theta = theta * -1;
+                }
+                AffineTransform at = new AffineTransform();
+
+                at.rotate(theta);
+                initializer.transform(at);
+
+                xf = initializer.getCurrentPoint().getX();
+                yf = initializer.getCurrentPoint().getY();
+
+                // rotates the drawn initializer to make the two end points lie on the x-axis
+                System.out.printf("xf: %f\n", xf);
+                System.out.printf("yf: %f\n", yf);
+
+
+                // scales the initializer to make the sidelength = 256
+                at.scale(256f/initializer.getBounds().width, 256f/initializer.getBounds().width);
+                initializer.transform(at);
+
                 sideLength = initializer.getBounds().width;
+
+                // sets scaleFactor
+                scaleFactor = Math.sqrt(2) / 2;
+
                 SwingUtilities.invokeLater(new DragonCurveFractal());
                 frame.dispose();
             }
@@ -102,6 +138,7 @@ public class DrawInitializer extends JComponent implements Runnable {
                 initializer = new Path2D.Double();
 
                 sideLength = 256;
+                scaleFactor = Math.sqrt(2) / 2;
 
                 // points to create initializer
                 int[] xPoints = new int[]{0, sideLength / 2, sideLength};
@@ -120,7 +157,7 @@ public class DrawInitializer extends JComponent implements Runnable {
         });
 
         JPanel panel = new JPanel();
-        panel.add(enterButton);
+        //panel.add(enterButton);
         panel.add(useOriginalDragonCurveInitializer);
         content.add(panel, BorderLayout.NORTH);
 
@@ -155,5 +192,9 @@ public class DrawInitializer extends JComponent implements Runnable {
 
     public static int getSideLength(){
         return sideLength;
+    }
+
+    public static double getScaleFactor(){
+        return scaleFactor;
     }
 }
