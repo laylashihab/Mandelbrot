@@ -105,11 +105,6 @@ public class DragonCurveFractal extends JComponent implements Runnable {
         AffineTransform at = g2.getTransform();
         at.translate( getWidth()/2f - sideLength/2f, getHeight()/2f);
         g2.setTransform(at);
-        g2.drawLine(0,0,0,0);
-
-
-        //initializer.transform(at);
-        //initializer.transform(AffineTransform.getTranslateInstance(getWidth()/2f - sideLength/2f, getHeight()/2f));
 
         nextGeneration(1);
     }

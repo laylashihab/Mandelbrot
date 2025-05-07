@@ -64,11 +64,12 @@ public class DrawInitializer extends JComponent implements Runnable {
                     initializer = new Path2D.Double();
 
                     // Move to the first point
-                    initializer.moveTo(xPoints.get(0), yPoints.get(0));
+                    initializer.moveTo(xPoints.get(0) - (getWidth()/2f - sideLength/2f), yPoints.get(0) - getHeight()/2f);
 
                     // Draw lines to the remaining points
                     for (int i = 1; i < xPoints.size(); i++) {
-                        initializer.lineTo(xPoints.get(i), yPoints.get(i));
+                        // shifts the points to account for centering (first point will be at origin
+                        initializer.lineTo(xPoints.get(i) - (getWidth()/2f - sideLength/2f), yPoints.get(i) - getHeight()/2f);
                     }
 
                     initializer.moveTo(xPoints.get(0), yPoints.get(0));
