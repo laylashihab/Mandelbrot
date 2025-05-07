@@ -2,12 +2,15 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Path2D;
 
 public class DragonCurveFractal extends JComponent implements Runnable {
     static Graphics2D g2;
-    static Path2D.Double initializer;
+    static Path2D initializer;
     private JFrame frame;
+
+    DrawInitializer drawInitializer;
 
     static int sideLength;
     static int maxGen = 0;
@@ -40,6 +43,9 @@ public class DragonCurveFractal extends JComponent implements Runnable {
             if (e.getSource() == (lastGenButton)) {
                 if (maxGen > 0) {
                     maxGen--;
+                    hausdorff.setText(String.format("Hausdorff Dimension: log %.2f / log %.2f = %.4f",
+                            Math.pow(2, maxGen+1), Math.pow(Math.sqrt(2),maxGen+1),
+                            Math.log(Math.pow(2, maxGen+1))/Math.log(Math.pow(Math.sqrt(2),maxGen+1))));
                     frame.repaint();
                     frame.revalidate();
                 }
@@ -90,19 +96,20 @@ public class DragonCurveFractal extends JComponent implements Runnable {
     public void paintComponent(Graphics g) {
         g2 = (Graphics2D) g;
 
-        // sets coordinate origin to center
         g2.setStroke(new BasicStroke(5));
         g2.setColor(Color.PINK);
 
-
-        // points to create initializer
-        xPoints = new int[]{0, sideLength / 2, sideLength};
-        yPoints = new int[]{0, sideLength / 2, 0};
+        initializer = DrawInitializer.getInitializer();
 
         // sets coordinate origin to first point
-        g2.translate(getWidth() / 2 - sideLength / 2, getHeight() / 2);
+        AffineTransform at = g2.getTransform();
+        at.translate( getWidth()/2f - sideLength/2f, getHeight()/2f);
+        g2.setTransform(at);
+        g2.drawLine(0,0,0,0);
 
-        initializer = DrawInitializer.getInitializer();
+
+        //initializer.transform(at);
+        //initializer.transform(AffineTransform.getTranslateInstance(getWidth()/2f - sideLength/2f, getHeight()/2f));
 
         nextGeneration(1);
     }

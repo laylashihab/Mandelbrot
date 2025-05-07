@@ -11,63 +11,121 @@ public class DrawInitializer extends JComponent implements Runnable {
     Graphics2D graphics2D;  // this will enable drawing
     int curX; // current mouse x coordinate
     int curY; // current mouse y coordinate
-    int startX; // previous mouse x coordinate
-    int startY; // previous mouse y coordinate
+    int lastX; // previous mouse x coordinate
+    int lastY; // previous mouse y coordinate
 
     JButton enterButton; // button to enter information
     JButton useOriginalDragonCurveInitializer;
 
     DrawInitializer paint; // variable of the type SimplePaint
 
-    static Path2D.Double initializer;
-    static int sideLength;
+    static Path2D initializer;
+    static int sideLength = 256;
     static double scaleFactor;
 
-    double xf;
-    double yf;
+    int xf;
+    int yf;
 
-    private int maxGen;
+    boolean startFlag = false;
+
+    ArrayList<Integer> xPoints = new ArrayList<>();
+    ArrayList<Integer> yPoints = new ArrayList<>();
 
     public DrawInitializer() {
-        initializer = new Path2D.Double();
-
         addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent e) {
-                if (initializer.getCurrentPoint() == null) {
-                    startX = e.getX();
-                    startY = e.getY();
+                int delta = 30;
 
-                    initializer.moveTo(startX, startY);
+                // if clicking on first point
+                if (Math.abs(e.getX()-(getWidth() / 2 - sideLength / 2)) < delta &&
+                Math.abs(e.getY()-(getHeight() / 2)) < delta) {
+                    System.out.println("here");
+                    lastX = (getWidth() / 2 - sideLength / 2);
+                    lastY = (getHeight() / 2);
+
+                    xPoints.add(lastX);
+                    yPoints.add(lastY);
+
+                    startFlag = true;
+                }
+                // if clicking on last point
+                if (Math.abs(e.getX()-(getWidth() / 2 + sideLength / 2)) < delta &&
+                        Math.abs(e.getY()-(getHeight() / 2)) < delta) {
+
+                    startFlag = false;
+
+                    // sets final coordinates to the last point
+                    xf = (getWidth() / 2 + sideLength / 2);
+                    yf = (getHeight() / 2);
+
+                    xPoints.add(xf);
+                    yPoints.add(yf);
+
+                    initializer = new Path2D.Double();
+
+                    // Move to the first point
+                    initializer.moveTo(xPoints.get(0), yPoints.get(0));
+
+                    // Draw lines to the remaining points
+                    for (int i = 1; i < xPoints.size(); i++) {
+                        initializer.lineTo(xPoints.get(i), yPoints.get(i));
+                    }
+
+                    initializer.moveTo(xPoints.get(0), yPoints.get(0));
+                    initializer.closePath();
+
+                    sideLength = 256;
+
+                    // sets scaleFactor
+                    scaleFactor = Math.sqrt(2) / 2;
+
+                    SwingUtilities.invokeLater(new DragonCurveFractal());
+                    //frame.dispose();
                 }
             }
             public void mouseReleased(MouseEvent e) {
-                startX = e.getX();
-                startY = e.getY();
+                if (startFlag) {
+                    lastX = e.getX();
+                    lastY = e.getY();
 
-                initializer.lineTo(startX, startY);
+                    xPoints.add(lastX);
+                    yPoints.add(lastY);
+                }
             }
         });
 
         addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
-                // removes old line
-                graphics2D.setPaint(Color.white);
-                graphics2D.fillRect(0, 0, getSize().width, getSize().height);
-                graphics2D.setPaint(Color.black);
+                if (startFlag) {
+                    // removes old line
+                    graphics2D.setPaint(Color.white);
+                    graphics2D.fillRect(0, 0, getSize().width, getSize().height);
+                    graphics2D.setPaint(Color.black);
 
-                // redraws complete lines
-                graphics2D.draw(initializer);
+                    // redraws complete lines
+                    for (int i = 0; i < xPoints.size() -1; i++) {
+                        graphics2D.drawLine(xPoints.get(i),yPoints.get(i), xPoints.get(i+1), yPoints.get(i+1));
+                    }
 
-                // set current coordinates to where mouse is being dragged
-                curX = e.getX();
-                curY = e.getY();
+                    // draws the start and end points
+                    graphics2D.setStroke(new BasicStroke(10));
+                    graphics2D.drawLine(getWidth() / 2 - sideLength / 2, getSize().height/2,
+                            getWidth() / 2 - sideLength / 2, getSize().height/2);
+                    graphics2D.drawLine(getWidth() / 2 + sideLength / 2, getSize().height/2,
+                            getWidth() / 2 + sideLength / 2, getSize().height/2);
+                    graphics2D.setStroke(new BasicStroke(5));
 
-                // draw the line between start and current coords
-                graphics2D.drawLine(startX, startY, curX, curY);
+                    // set current coordinates to where mouse is being dragged
+                    curX = e.getX();
+                    curY = e.getY();
 
-                // refresh frame and reset old coordinates
-                repaint();
+                    // draw the line between start and current coords
+                    graphics2D.drawLine(lastX, lastY, curX, curY);
+
+                    // refresh frame and reset old coordinates
+                    repaint();
+                }
             }
         });
     }
@@ -82,53 +140,11 @@ public class DrawInitializer extends JComponent implements Runnable {
         paint = new DrawInitializer();
         content.add(paint, BorderLayout.CENTER);
 
-
-        frame.setSize(600, 400);
+        frame.setSize(600, 600);
         frame.setLocationRelativeTo(null);
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setVisible(true);
 
-        enterButton = new JButton("Enter");
-        // action listener to store new initializer information
-        enterButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                xf = initializer.getCurrentPoint().getX();
-                yf = initializer.getCurrentPoint().getY();
-
-                // rotates the drawn initializer to make the two end points lie on the x-axis
-                double theta = Math.atan((yf)/(xf));
-                System.out.printf("xf: %f\n", xf);
-                System.out.printf("yf: %f\n", yf);
-                System.out.println(theta);
-                if (yf<0){
-                    theta = theta * -1;
-                }
-                AffineTransform at = new AffineTransform();
-
-                at.rotate(theta);
-                initializer.transform(at);
-
-                xf = initializer.getCurrentPoint().getX();
-                yf = initializer.getCurrentPoint().getY();
-
-                // rotates the drawn initializer to make the two end points lie on the x-axis
-                System.out.printf("xf: %f\n", xf);
-                System.out.printf("yf: %f\n", yf);
-
-
-                // scales the initializer to make the sidelength = 256
-                at.scale(256f/initializer.getBounds().width, 256f/initializer.getBounds().width);
-                initializer.transform(at);
-
-                sideLength = initializer.getBounds().width;
-
-                // sets scaleFactor
-                scaleFactor = Math.sqrt(2) / 2;
-
-                SwingUtilities.invokeLater(new DragonCurveFractal());
-                frame.dispose();
-            }
-        });
 
         useOriginalDragonCurveInitializer = new JButton("Use Original Dragon Curve");
         // action listener to return dragon curve initializer
@@ -151,17 +167,18 @@ public class DrawInitializer extends JComponent implements Runnable {
                 for (int i = 1; i < xPoints.length; i++) {
                     initializer.lineTo(xPoints[i], yPoints[i]);
                 }
+
+                initializer.moveTo(xPoints[0], yPoints[0]);
+                initializer.closePath();
+
                 SwingUtilities.invokeLater(new DragonCurveFractal());
                 frame.dispose();
             }
         });
 
         JPanel panel = new JPanel();
-        //panel.add(enterButton);
         panel.add(useOriginalDragonCurveInitializer);
         content.add(panel, BorderLayout.NORTH);
-
-
     }
 
 
@@ -180,13 +197,22 @@ public class DrawInitializer extends JComponent implements Runnable {
             graphics2D.setPaint(Color.white);
             graphics2D.fillRect(0, 0, getSize().width, getSize().height);
             graphics2D.setPaint(Color.black);
+
+            // draws the start and end points
+            graphics2D.setStroke(new BasicStroke(10));
+            graphics2D.drawLine(getWidth() / 2 - sideLength / 2, getSize().height/2,
+                    getWidth() / 2 - sideLength / 2, getSize().height/2);
+            graphics2D.drawLine(getWidth() / 2 + sideLength / 2, getSize().height/2,
+                    getWidth() / 2 + sideLength / 2, getSize().height/2);
+            graphics2D.setStroke(new BasicStroke(3));
+
             repaint();
         }
         g.drawImage(image, 0, 0, null);
 
     }
 
-    public static Path2D.Double getInitializer(){
+    public static Path2D getInitializer(){
         return initializer;
     }
 
@@ -197,4 +223,5 @@ public class DrawInitializer extends JComponent implements Runnable {
     public static double getScaleFactor(){
         return scaleFactor;
     }
+
 }
