@@ -14,14 +14,13 @@ public class DrawInitializer extends JComponent implements Runnable {
     int lastX; // previous mouse x coordinate
     int lastY; // previous mouse y coordinate
 
-    JButton enterButton; // button to enter information
     JButton useOriginalDragonCurveInitializer;
 
     DrawInitializer paint; // variable of the type SimplePaint
 
     static Path2D initializer;
-    static int sideLength = 256;
-    static double scaleFactor;
+    int sideLength = new DragonCurveFractal().getSideLength();
+    double scaleFactor;
 
     int xf;
     int yf;
@@ -215,14 +214,6 @@ public class DrawInitializer extends JComponent implements Runnable {
 
     public static Path2D getInitializer(){
         return initializer;
-    }
-
-    public static int getSideLength(){
-        return sideLength;
-    }
-
-    public static double getScaleFactor(){
-        return scaleFactor;
     }
 
 }

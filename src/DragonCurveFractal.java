@@ -6,18 +6,13 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Path2D;
 
 public class DragonCurveFractal extends JComponent implements Runnable {
-    static Graphics2D g2;
-    static Path2D initializer;
+    Graphics2D g2;
+    Path2D initializer;
     private JFrame frame;
 
-    DrawInitializer drawInitializer;
-
-    static int sideLength;
-    static int maxGen = 0;
-    static double scaleFactor;
-
-    int[] xPoints;
-    int[] yPoints;
+    int sideLength = 256;
+    static int maxGen;
+    double scaleFactor = Math.sqrt(2) / 2;
 
     Button nextGenButton;
     Button lastGenButton;
@@ -83,10 +78,6 @@ public class DragonCurveFractal extends JComponent implements Runnable {
         info.add(hausdorff);
         frame.add(info, BorderLayout.SOUTH);
 
-        //sideLength = 256;
-        sideLength = DrawInitializer.getSideLength();
-        scaleFactor = DrawInitializer.getScaleFactor();
-
         frame.add(new DragonCurveFractal());
 
         frame.setVisible(true);
@@ -146,5 +137,9 @@ public class DragonCurveFractal extends JComponent implements Runnable {
         g2.rotate(-3 * Math.PI / 4);
         g2.scale(1/scaleFactor, 1/scaleFactor);
         g2.translate(-sideLength, 0);
+    }
+
+    int getSideLength(){
+        return sideLength;
     }
 }
