@@ -34,8 +34,8 @@ public class DragonCurveFractal extends JComponent implements Runnable {
                 if (maxGen < 16) {
                     maxGen++;
                     hausdorff.setText(String.format("Hausdorff Dimension: log %.2f / log %.2f = %.4f",
-                            Math.pow(2, maxGen+1), Math.pow(Math.sqrt(2),maxGen+1),
-                            Math.log(Math.pow(2, maxGen+1))/Math.log(Math.pow(Math.sqrt(2),maxGen+1))));
+                            Math.pow(2, maxGen + 1), Math.pow(Math.sqrt(2), maxGen + 1),
+                            Math.log(Math.pow(2, maxGen + 1)) / Math.log(Math.pow(Math.sqrt(2), maxGen + 1))));
                     frame.repaint();
                     frame.revalidate();
                 } else {
@@ -46,13 +46,13 @@ public class DragonCurveFractal extends JComponent implements Runnable {
                 if (maxGen > 0) {
                     maxGen--;
                     hausdorff.setText(String.format("Hausdorff Dimension: log %.2f / log %.2f = %.4f",
-                            Math.pow(2, maxGen+1), Math.pow(Math.sqrt(2),maxGen+1),
-                            Math.log(Math.pow(2, maxGen+1))/Math.log(Math.pow(Math.sqrt(2),maxGen+1))));
+                            Math.pow(2, maxGen + 1), Math.pow(Math.sqrt(2), maxGen + 1),
+                            Math.log(Math.pow(2, maxGen + 1)) / Math.log(Math.pow(Math.sqrt(2), maxGen + 1))));
                     frame.repaint();
                     frame.revalidate();
                 }
             }
-            if  (button.getText().equals("Back To 'Create Initializer'")) {
+            if (button.getText().equals("Back To 'Create Initializer'")) {
                 SwingUtilities.invokeLater(new DrawInitializer());
                 frame.dispose();
             }
@@ -108,7 +108,7 @@ public class DragonCurveFractal extends JComponent implements Runnable {
 
         // sets coordinate origin to first point
         AffineTransform at = g2.getTransform();
-        at.translate( getWidth()/2f - sideLength/2f, getHeight()/2f);
+        at.translate(getWidth() / 2f - sideLength / 2f, getHeight() / 2f);
         g2.setTransform(at);
 
         nextGeneration(1);
@@ -132,7 +132,7 @@ public class DragonCurveFractal extends JComponent implements Runnable {
 
         // move origin
         g2.rotate(-Math.PI / 4);
-        g2.scale(1/scaleFactor, 1/scaleFactor);
+        g2.scale(1 / scaleFactor, 1 / scaleFactor);
         g2.translate(sideLength, 0);
         g2.scale(scaleFactor, scaleFactor);
         g2.rotate(Math.PI / 4);
@@ -144,16 +144,16 @@ public class DragonCurveFractal extends JComponent implements Runnable {
             nextGeneration(gen + 1);
         } else {
             g2.draw(initializer);
-            n *=2;
+            n *= 2;
         }
 
         // move origin back to first point
         g2.rotate(-3 * Math.PI / 4);
-        g2.scale(1/scaleFactor, 1/scaleFactor);
+        g2.scale(1 / scaleFactor, 1 / scaleFactor);
         g2.translate(-sideLength, 0);
     }
 
-    int getSideLength(){
+    int getSideLength() {
         return sideLength;
     }
 }

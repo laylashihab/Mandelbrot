@@ -45,8 +45,8 @@ public class DrawInitializer extends JComponent implements Runnable {
                 int delta = 50;
 
                 // if clicking on first point
-                if (Math.abs(e.getX()-(getWidth() / 2 - sideLength / 2)) < delta &&
-                Math.abs(e.getY()-(getHeight() / 2)) < delta) {
+                if (Math.abs(e.getX() - (getWidth() / 2 - sideLength / 2)) < delta &&
+                        Math.abs(e.getY() - (getHeight() / 2)) < delta) {
                     lastX = (getWidth() / 2 - sideLength / 2);
                     lastY = (getHeight() / 2);
 
@@ -56,6 +56,7 @@ public class DrawInitializer extends JComponent implements Runnable {
                     startFlag = true;
                 }
             }
+
             public void mouseReleased(MouseEvent e) {
                 if (startFlag) {
                     // adds newest point to arraylists
@@ -78,16 +79,16 @@ public class DrawInitializer extends JComponent implements Runnable {
                     graphics2D.setPaint(Color.black);
 
                     // redraws complete lines
-                    for (int i = 0; i < xPoints.size() -1; i++) {
-                        graphics2D.drawLine(xPoints.get(i),yPoints.get(i), xPoints.get(i+1), yPoints.get(i+1));
+                    for (int i = 0; i < xPoints.size() - 1; i++) {
+                        graphics2D.drawLine(xPoints.get(i), yPoints.get(i), xPoints.get(i + 1), yPoints.get(i + 1));
                     }
 
                     // draws the start and end points
                     graphics2D.setStroke(new BasicStroke(10));
-                    graphics2D.drawLine(getWidth() / 2 - sideLength / 2, getSize().height/2,
-                            getWidth() / 2 - sideLength / 2, getSize().height/2);
-                    graphics2D.drawLine(getWidth() / 2 + sideLength / 2, getSize().height/2,
-                            getWidth() / 2 + sideLength / 2, getSize().height/2);
+                    graphics2D.drawLine(getWidth() / 2 - sideLength / 2, getSize().height / 2,
+                            getWidth() / 2 - sideLength / 2, getSize().height / 2);
+                    graphics2D.drawLine(getWidth() / 2 + sideLength / 2, getSize().height / 2,
+                            getWidth() / 2 + sideLength / 2, getSize().height / 2);
                     graphics2D.setStroke(new BasicStroke(5));
 
                     // set current coordinates to where mouse is being dragged
@@ -164,12 +165,12 @@ public class DrawInitializer extends JComponent implements Runnable {
                 initializer = new Path2D.Double();
 
                 // Move to the first point
-                initializer.moveTo(xPoints.get(0) - (getWidth()/2f - sideLength/2f), yPoints.get(0) - getHeight()/2f);
+                initializer.moveTo(xPoints.get(0) - (getWidth() / 2f - sideLength / 2f), yPoints.get(0) - getHeight() / 2f);
 
                 // Draw lines to the remaining points
                 for (int i = 1; i < xPoints.size(); i++) {
                     // shifts the points to account for centering (first point will be at origin)
-                    initializer.lineTo(xPoints.get(i) - (getWidth()/2f - sideLength/2f), yPoints.get(i) - getHeight()/2f);
+                    initializer.lineTo(xPoints.get(i) - (getWidth() / 2f - sideLength / 2f), yPoints.get(i) - getHeight() / 2f);
                 }
 
                 initializer.moveTo(xPoints.get(0), yPoints.get(0));
@@ -216,10 +217,10 @@ public class DrawInitializer extends JComponent implements Runnable {
 
             // draws the start and end points
             graphics2D.setStroke(new BasicStroke(10));
-            graphics2D.drawLine(getWidth() / 2 - sideLength / 2, getSize().height/2,
-                    getWidth() / 2 - sideLength / 2, getSize().height/2);
-            graphics2D.drawLine(getWidth() / 2 + sideLength / 2, getSize().height/2,
-                    getWidth() / 2 + sideLength / 2, getSize().height/2);
+            graphics2D.drawLine(getWidth() / 2 - sideLength / 2, getSize().height / 2,
+                    getWidth() / 2 - sideLength / 2, getSize().height / 2);
+            graphics2D.drawLine(getWidth() / 2 + sideLength / 2, getSize().height / 2,
+                    getWidth() / 2 + sideLength / 2, getSize().height / 2);
             graphics2D.setStroke(new BasicStroke(3));
 
             repaint();
@@ -228,7 +229,7 @@ public class DrawInitializer extends JComponent implements Runnable {
 
     }
 
-    public static Path2D getInitializer(){
+    public static Path2D getInitializer() {
         return initializer;
     }
 
