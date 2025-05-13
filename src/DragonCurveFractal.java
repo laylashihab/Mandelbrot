@@ -1,3 +1,11 @@
+/**
+ * Java class to produce a dragon curve fractal
+ * Sets up JFrame Window to visualize the fractal and allows user to step through diff generations
+ *
+ * @version May 13, 2025
+ * @author Layla Shihab
+ */
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -14,8 +22,6 @@ public class DragonCurveFractal extends JComponent implements Runnable {
     static int maxGen;
     double scaleFactor = Math.sqrt(2) / 2;
 
-    Button nextGenButton;
-    Button lastGenButton;
     JLabel hausdorff;
 
     int n = 2; // number of self-similar objects
@@ -23,7 +29,8 @@ public class DragonCurveFractal extends JComponent implements Runnable {
     ActionListener actionListener = new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
-            if (e.getSource() == (nextGenButton)) {
+            JButton button = (JButton) e.getSource();
+            if (button.getText().equals("Next Generation")) {
                 if (maxGen < 16) {
                     maxGen++;
                     hausdorff.setText(String.format("Hausdorff Dimension: log %.2f / log %.2f = %.4f",
@@ -35,7 +42,7 @@ public class DragonCurveFractal extends JComponent implements Runnable {
                     JOptionPane.showMessageDialog(null, "Generation Limit Reached");
                 }
             }
-            if (e.getSource() == (lastGenButton)) {
+            if (button.getText().equals("Last Generation")) {
                 if (maxGen > 0) {
                     maxGen--;
                     hausdorff.setText(String.format("Hausdorff Dimension: log %.2f / log %.2f = %.4f",
@@ -44,6 +51,10 @@ public class DragonCurveFractal extends JComponent implements Runnable {
                     frame.repaint();
                     frame.revalidate();
                 }
+            }
+            if  (button.getText().equals("Back To 'Create Initializer'")) {
+                SwingUtilities.invokeLater(new DrawInitializer());
+                frame.dispose();
             }
         }
     };
@@ -64,12 +75,15 @@ public class DragonCurveFractal extends JComponent implements Runnable {
         frame.setLocationRelativeTo(null); //centers frame on screen
 
         JPanel content = new JPanel();
-        nextGenButton = new Button("Next Generation");
+        JButton nextGenButton = new JButton("Next Generation");
         nextGenButton.addActionListener(actionListener);
-        lastGenButton = new Button("Last Generation");
+        JButton lastGenButton = new JButton("Last Generation");
         lastGenButton.addActionListener(actionListener);
+        JButton backButton = new JButton("Back To 'Create Initializer'");
+        backButton.addActionListener(actionListener);
         content.add(nextGenButton);
         content.add(lastGenButton);
+        content.add(backButton);
         frame.add(content, BorderLayout.NORTH);
 
         JPanel info = new JPanel();

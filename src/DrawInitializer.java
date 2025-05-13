@@ -1,7 +1,15 @@
+/**
+ * Java class to create an initializer for creating a fractal
+ * Sets up JFrame Window to produce a custom initializer or the classic dragon curve initializer
+ *
+ * @version May 13, 2025
+ * @author Layla Shihab
+ */
+
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.geom.AffineTransform;
 import java.awt.geom.Path2D;
 import java.util.ArrayList;
 
@@ -15,6 +23,7 @@ public class DrawInitializer extends JComponent implements Runnable {
     int lastY; // previous mouse y coordinate
 
     JButton useOriginalDragonCurveInitializer;
+    JButton customInitializer;
 
     DrawInitializer paint; // variable of the type SimplePaint
 
@@ -33,12 +42,11 @@ public class DrawInitializer extends JComponent implements Runnable {
     public DrawInitializer() {
         addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent e) {
-                int delta = 30;
+                int delta = 50;
 
                 // if clicking on first point
                 if (Math.abs(e.getX()-(getWidth() / 2 - sideLength / 2)) < delta &&
                 Math.abs(e.getY()-(getHeight() / 2)) < delta) {
-                    System.out.println("here");
                     lastX = (getWidth() / 2 - sideLength / 2);
                     lastY = (getHeight() / 2);
 
@@ -47,44 +55,10 @@ public class DrawInitializer extends JComponent implements Runnable {
 
                     startFlag = true;
                 }
-                // if clicking on last point
-                if (Math.abs(e.getX()-(getWidth() / 2 + sideLength / 2)) < delta &&
-                        Math.abs(e.getY()-(getHeight() / 2)) < delta) {
-
-                    startFlag = false;
-
-                    // sets final coordinates to the last point
-                    xf = (getWidth() / 2 + sideLength / 2);
-                    yf = (getHeight() / 2);
-
-                    xPoints.add(xf);
-                    yPoints.add(yf);
-
-                    initializer = new Path2D.Double();
-
-                    // Move to the first point
-                    initializer.moveTo(xPoints.get(0) - (getWidth()/2f - sideLength/2f), yPoints.get(0) - getHeight()/2f);
-
-                    // Draw lines to the remaining points
-                    for (int i = 1; i < xPoints.size(); i++) {
-                        // shifts the points to account for centering (first point will be at origin
-                        initializer.lineTo(xPoints.get(i) - (getWidth()/2f - sideLength/2f), yPoints.get(i) - getHeight()/2f);
-                    }
-
-                    initializer.moveTo(xPoints.get(0), yPoints.get(0));
-                    initializer.closePath();
-
-                    sideLength = 256;
-
-                    // sets scaleFactor
-                    scaleFactor = Math.sqrt(2) / 2;
-
-                    SwingUtilities.invokeLater(new DragonCurveFractal());
-                    //frame.dispose();
-                }
             }
             public void mouseReleased(MouseEvent e) {
                 if (startFlag) {
+                    // adds newest point to arraylists
                     lastX = e.getX();
                     lastY = e.getY();
 
@@ -137,14 +111,13 @@ public class DrawInitializer extends JComponent implements Runnable {
 
         Container content = frame.getContentPane();
         content.setLayout(new BorderLayout());
-        paint = new DrawInitializer();
+        paint = this;
         content.add(paint, BorderLayout.CENTER);
 
         frame.setSize(600, 600);
         frame.setLocationRelativeTo(null);
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setVisible(true);
-
 
         useOriginalDragonCurveInitializer = new JButton("Use Original Dragon Curve");
         // action listener to return dragon curve initializer
@@ -176,9 +149,52 @@ public class DrawInitializer extends JComponent implements Runnable {
             }
         });
 
+        customInitializer = new JButton("Custom Initializer");
+        customInitializer.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                startFlag = false;
+
+                // sets final coordinates to the last point
+                xf = (getWidth() / 2 + sideLength / 2);
+                yf = (getHeight() / 2);
+
+                xPoints.add(xf);
+                yPoints.add(yf);
+
+                initializer = new Path2D.Double();
+
+                // Move to the first point
+                initializer.moveTo(xPoints.get(0) - (getWidth()/2f - sideLength/2f), yPoints.get(0) - getHeight()/2f);
+
+                // Draw lines to the remaining points
+                for (int i = 1; i < xPoints.size(); i++) {
+                    // shifts the points to account for centering (first point will be at origin)
+                    initializer.lineTo(xPoints.get(i) - (getWidth()/2f - sideLength/2f), yPoints.get(i) - getHeight()/2f);
+                }
+
+                initializer.moveTo(xPoints.get(0), yPoints.get(0));
+                initializer.closePath();
+
+                sideLength = 256;
+
+                // sets scaleFactor
+                scaleFactor = Math.sqrt(2) / 2;
+
+                SwingUtilities.invokeLater(new DragonCurveFractal());
+                frame.dispose();
+            }
+        });
+
+        JPanel introPanel = new JPanel();
+        JLabel welcomeLabel = new JLabel("Welcome!\tDraw your own initializer or use the classic");
+        welcomeLabel.setFont(new Font("Arial", Font.BOLD, 20));
+        introPanel.add(welcomeLabel);
+        // panel with buttons
         JPanel panel = new JPanel();
         panel.add(useOriginalDragonCurveInitializer);
-        content.add(panel, BorderLayout.NORTH);
+        panel.add(customInitializer);
+        content.add(introPanel, BorderLayout.NORTH);
+        content.add(panel, BorderLayout.SOUTH);
     }
 
 
