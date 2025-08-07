@@ -1,15 +1,13 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionListener;
 
 /**
- * Class to run Mandelbrot Fractal Maker Application
+ * Class to run Mandelbrot Fractal Generator Application
  * Contains constants and methods to create a uniformly stylized UI
  *
  * @author Layla Shihab
- * @version 8/5/25
+ * @version August 5 2025
  */
-
 public class Main implements Runnable {
 
     // UI constants
@@ -19,6 +17,14 @@ public class Main implements Runnable {
     public static final Font labelFont = new Font("Arial",Font.BOLD,20);
     public static final Font titleFont = new Font("Arial",Font.BOLD,30);
 
+    /**
+     * Uniformly styles all buttons, panels, labels, and titles passed in
+     *
+     * @param buttons: array of JButtons to style
+     * @param panels: array of JPanels to style
+     * @param labels: array of JLabels to style as labels (not titles)
+     * @param titles: array of JLabels to style as titles
+     */
     public static void styleAll(JButton[] buttons, JPanel[] panels, JLabel[] labels, JLabel[] titles){
         styleButtons(buttons);
         stylePanels(panels);
@@ -26,6 +32,11 @@ public class Main implements Runnable {
         styleTitles(titles);
     }
 
+    /**
+     * Styles buttons to have a uniform color, size, and font
+     *
+     * @param buttons: array of JButtons to style
+     */
     public static void styleButtons(JButton[] buttons){
         for (JButton button : buttons) {
             button.setBackground(buttonColor);
@@ -34,12 +45,22 @@ public class Main implements Runnable {
         }
     }
 
+    /**
+     * Styles panels to have a uniform color
+     *
+     * @param panels: array of JPanels to style
+     */
     public static void stylePanels(JPanel[] panels){
         for (JPanel panel : panels) {
             panel.setBackground(backgroundColor);
         }
     }
 
+    /**
+     * Styles labels to have a uniform background color, font, and alignment
+     *
+     * @param labels: array of JLabels to style
+     */
     public static void styleLabels(JLabel[] labels){
         for (JLabel label : labels) {
             label.setBackground(backgroundColor);
@@ -48,6 +69,11 @@ public class Main implements Runnable {
         }
     }
 
+    /**
+     * Styles title labels to have a uniform background color, font, and alignment
+     *
+     * @param titles: array of JLabels to style
+     */
     public static void styleTitles(JLabel[] titles){
         for (JLabel title : titles) {
             title.setBackground(backgroundColor);
@@ -56,6 +82,11 @@ public class Main implements Runnable {
         }
     }
 
+    /**
+     * Creates a frame and sets up initialing parameters
+     *
+     * @return JFrame: newly created frame
+     */
     public static JFrame createBasicFrame(){
         JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -66,6 +97,12 @@ public class Main implements Runnable {
         return frame;
     }
 
+    /**
+     * Creates a panel with a button to navigates back to the home page.
+     *
+     * @param frame: frame that houses the new panel so the actionListener correctly disposes of the frame
+     * @return JPanel: the newly created panel with a return home button
+     */
     public static JPanel returnHomePanel(JFrame frame){
         JPanel panel = new JPanel();
         JButton homeButton = new JButton("Return to Home Page");
@@ -81,6 +118,10 @@ public class Main implements Runnable {
         return panel;
     }
 
+    /**
+     * Creates the Home frame that houses the fractal options and title
+     * Runs the program
+     */
     public void run(){
         // sets up main frame
         JFrame frame = createBasicFrame();
@@ -147,6 +188,11 @@ public class Main implements Runnable {
         frame.repaint();
     }
 
+    /**
+     * Runs the program
+     *
+     * @param args
+     */
     public static void main(String[] args){
         SwingUtilities.invokeLater(new Main());
     }

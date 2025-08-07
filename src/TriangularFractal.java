@@ -3,18 +3,16 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Path2D;
-import java.util.Random;
 import javax.swing.*;
 
 /**
- * Class to generate a triangular fractal. User specifies the max number of generations
+ * Class to generate a frame with a triangular fractal. Buttons allow for more/less depth in the fractal
  *
  *
  * @author Layla Shihab
- * @version April 11 2025
+ * @version August 5 2025
  *
  */
-
 public class TriangularFractal extends JComponent implements Runnable {
      Graphics2D g2;
      double l = 300; //length of one side
@@ -24,7 +22,9 @@ public class TriangularFractal extends JComponent implements Runnable {
      Path2D.Double initializer;
      static int maxGen = 1;
 
-
+    /**
+     * Sets up the Triangular Fractal frame to house the fractal and buttons
+     */
     public void run() {
         // sets up frame
         JFrame frame = Main.createBasicFrame();
@@ -88,6 +88,11 @@ public class TriangularFractal extends JComponent implements Runnable {
         frame.repaint();
     }
 
+    /**
+     * Sets up the initializer and draws initializer
+     *
+     * @param g the <code>Graphics</code> object to protect
+     */
      public void paintComponent(Graphics g) {
          g2 = (Graphics2D) g;
          double[] xPoints;
@@ -121,11 +126,17 @@ public class TriangularFractal extends JComponent implements Runnable {
          g2.draw(initializer); // Draw the outline
          g2.fill(initializer); // Fill the polygon
 
-        if (maxGen > 0){
+        if (maxGen > 1){
              nextGen(0);
          }
      }
 
+    /**
+     * Draws the next generation of a triangular fractal
+     * Recursively runs until the generation hits the maxGen
+     *
+     * @param generation: the generation being drawn in that iteration
+     */
      public void nextGen(int generation) {
 
          if (generation == maxGen-1) {

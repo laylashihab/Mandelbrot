@@ -1,21 +1,15 @@
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Path2D;
 import javax.swing.*;
 
 /**
- * Class to generate a Sierpinski triangle fractal. User specifies the max number of generations
- *
- *
- * NOTE: this could be greatly improved by simply moving each triangle from center out a distance of d and rotating g2 accordingly.
+ * Class to generate a Sierpinski triangle fractal. Buttons allow for more/less depth in the fractal
  *
  * @author Layla Shihab
- * @version April 11 2025
+ * @version August 5 2025
  *
  */
-
 public class SierpinskiTriangle extends JComponent implements Runnable {
     Graphics2D g2;
     JFrame frame;
@@ -26,9 +20,13 @@ public class SierpinskiTriangle extends JComponent implements Runnable {
     Path2D.Double initializer;
     static int maxGen = 0;
 
-    JLabel hausdorff;
 
-    public void updateHausdorffLabel(){
+    /**
+     * Updates the Hausdorff label with the new scale and number of self similar objects
+     *
+     * @param hausdorff: the JLabel to update
+     */
+    public void updateHausdorffLabel(JLabel hausdorff) {
         hausdorff.setText(String.format("Hausdorff Dimension: log %.2f / log %.2f = %.4f",
                 Math.pow(3, maxGen+1), Math.pow(2,maxGen+1),
                 Math.log(Math.pow(3, maxGen+1))/Math.log(Math.pow(2,maxGen+1))));
@@ -37,29 +35,8 @@ public class SierpinskiTriangle extends JComponent implements Runnable {
     }
 
     /**
-     * ActionListener dealing with buttons
+     * Sets up the Sierpinski Triangle frame to house the fractal and buttons
      */
-    ActionListener actionListener = new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            // gets the button that was pressed
-            JButton b = (JButton)e.getSource();
-            if (b.getText().equals("Next Generation")) {
-                if (maxGen < 16) {
-                    maxGen++;
-                    updateHausdorffLabel();
-                } else {
-                    JOptionPane.showMessageDialog(null, "Generation Limit Reached");
-                }
-            } else if (b.getText().equals("Last Generation")) {
-                if (maxGen > 0) {
-                    maxGen--;
-                    updateHausdorffLabel();
-                }
-            }
-        }
-    };
-
     public void run(){
         // sets up frame
         frame = Main.createBasicFrame();
@@ -68,12 +45,24 @@ public class SierpinskiTriangle extends JComponent implements Runnable {
         JPanel content = new JPanel();
         content.setLayout(new GridBagLayout());
         JLabel title = new JLabel("Sierpinski Triangle Generator");
-        hausdorff = new JLabel();
-        updateHausdorffLabel();
+        JLabel hausdorff = new JLabel();
+        updateHausdorffLabel(hausdorff);
         JButton nextGenButton = new JButton("Next Generation");
-        nextGenButton.addActionListener(actionListener);
+        nextGenButton.addActionListener(e -> {
+            if (maxGen < 16) {
+                maxGen++;
+                updateHausdorffLabel(hausdorff);
+            } else {
+                JOptionPane.showMessageDialog(null, "Generation Limit Reached");
+            }
+        });
         JButton lastGenButton = new JButton("Last Generation");
-        lastGenButton.addActionListener(actionListener);
+        lastGenButton.addActionListener(e->{
+            if (maxGen > 0) {
+                maxGen--;
+                updateHausdorffLabel(hausdorff);
+            }
+        });
 
         GridBagConstraints c = new GridBagConstraints();
         c.insets = new Insets(5, 5, 5, 5);
@@ -106,6 +95,11 @@ public class SierpinskiTriangle extends JComponent implements Runnable {
         frame.repaint();
     }
 
+    /**
+     * Sets up the initializer and draws initializer
+     *
+     * @param g the <code>Graphics</code> object to protect
+     */
     public void paintComponent(Graphics g) {
         g2 = (Graphics2D) g;
         double[] xPoints;
@@ -151,6 +145,12 @@ public class SierpinskiTriangle extends JComponent implements Runnable {
         }
     }
 
+    /**
+     * Draws the next generation of a triangular fractal
+     * Recursively runs until the generation hits the maxGen
+     *
+     * @param generation: the generation being drawn in that iteration
+     */
     public void nextGen(int generation) {
         AffineTransform here;
         here = g2.getTransform();

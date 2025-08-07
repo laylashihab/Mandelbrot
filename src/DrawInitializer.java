@@ -11,7 +11,6 @@ import java.util.ArrayList;
  * @version August 5, 2025
  * @author Layla Shihab
  */
-
 public class DrawInitializer extends JComponent implements Runnable {
     JFrame frame;
     Image image; // the canvas
@@ -35,10 +34,17 @@ public class DrawInitializer extends JComponent implements Runnable {
 
     boolean startFlag = false;
 
+    // list of points to make a path from in the initializer
     ArrayList<Integer> xPoints = new ArrayList<>();
     ArrayList<Integer> yPoints = new ArrayList<>();
 
+    /**
+     * When DrawInitializer is instantiated, adds mouseListeners and mouseMotionListeners to create the initializer
+     *
+     */
     public DrawInitializer() {
+
+        // mouse click/unclick events
         addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent e) {
                 int delta = 50;
@@ -68,6 +74,7 @@ public class DrawInitializer extends JComponent implements Runnable {
             }
         });
 
+        // mouse drag events
         addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
@@ -104,6 +111,9 @@ public class DrawInitializer extends JComponent implements Runnable {
         });
     }
 
+    /**
+     * Sets up the Draw Initializer frame to house the canvas and buttons
+     */
     public void run() {
         frame = Main.createBasicFrame();
         frame.setTitle("Create an initializer");
@@ -203,15 +213,17 @@ public class DrawInitializer extends JComponent implements Runnable {
         frame.setVisible(true);
     }
 
-
+    /**
+     * Renders the drawing
+     *
+     * @param g the <code>Graphics</code> object to protect
+     */
     protected void paintComponent(Graphics g) {
         if (image == null) {
             image = createImage(getSize().width, getSize().height);
 
-            // this lets us draw on the image (ie. the canvas)
             graphics2D = (Graphics2D) image.getGraphics();
 
-            // gives us better rendering quality for the drawing lines
             graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                     RenderingHints.VALUE_ANTIALIAS_ON);
 
@@ -234,6 +246,10 @@ public class DrawInitializer extends JComponent implements Runnable {
 
     }
 
+    /**
+     * Returns the initializer that the class has created
+     * @return Path2D initializer
+     */
     public static Path2D getInitializer() {
         return initializer;
     }
