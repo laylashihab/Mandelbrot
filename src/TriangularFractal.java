@@ -1,4 +1,6 @@
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Path2D;
 import java.util.Random;
@@ -13,35 +15,77 @@ import javax.swing.*;
  *
  */
 
-public class TriangularFractal extends JComponent {
+public class TriangularFractal extends JComponent implements Runnable {
      Graphics2D g2;
      double l = 300; //length of one side
      double h = l*(Math.sqrt(3))*(1/2f); //height from midpoint of one segment to opposite vertex
      double d = (1/(2*Math.sqrt(3)))*l; // distance from centroid to midpoint of one segment
      double r = h -d;
      Path2D.Double initializer;
-     static int maxGen = -1;
-     Random random = new Random();
+     static int maxGen = 1;
 
-    public static void main(String[] args) {
-        while (maxGen == -1) {
-            try {
-                maxGen = Integer.parseInt(JOptionPane.showInputDialog(null, "Enter a number of generations:"));
-            } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(null, "Please enter a number");
-            }
-        }
+
+    public void run() {
         // sets up frame
-        JFrame frame = new JFrame();
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        frame.setSize(600, 600);
-        frame.setResizable(true);
-        frame.setLocationRelativeTo(null); //centers frame on screen
+        JFrame frame = Main.createBasicFrame();
 
+        // sets up Title and button content
+        JPanel content = new JPanel();
+        content.setLayout(new GridBagLayout());
+        JLabel title = new JLabel("Triangular Fractal Generator");
+        JButton nextGenButton = new JButton("Next Generation");
+        nextGenButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (maxGen < 8) {
+                    maxGen++;
+                    frame.repaint();
+                    frame.revalidate();
+                } else {
+                    JOptionPane.showMessageDialog(null, "Generation Limit Reached");
+                }
+            }
+        });
+        JButton lastGenButton = new JButton("Last Generation");
+        lastGenButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (maxGen > 0) {
+                    maxGen--;
+                    frame.repaint();
+                    frame.revalidate();
+                }
+            }
+        });
+
+        GridBagConstraints c = new GridBagConstraints();
+        c.insets = new Insets(5, 5, 5, 5);
+        c.gridwidth = 2;
+        c.gridx = 0;
+        c.gridy = 0;
+        content.add(title,c);
+        c.gridwidth = 1;
+        c.gridy=1;
+        content.add(lastGenButton,c);
+        c.gridx = 1;
+        content.add(nextGenButton,c);
+
+        JPanel returnHomePanel = Main.returnHomePanel(frame);
+
+        // styles all buttons and panels
+        Main.styleAll(new JButton[]{nextGenButton,lastGenButton},
+                new JPanel[]{content},
+                new JLabel[]{},
+                new JLabel[]{title});
+
+
+        // adds all content/panels to frame
+        frame.add(content, BorderLayout.NORTH);
         frame.add(new TriangularFractal());
+        frame.add(returnHomePanel, BorderLayout.SOUTH);
 
         frame.setVisible(true);
-
+        frame.repaint();
     }
 
      public void paintComponent(Graphics g) {
@@ -77,8 +121,9 @@ public class TriangularFractal extends JComponent {
          g2.draw(initializer); // Draw the outline
          g2.fill(initializer); // Fill the polygon
 
-
-         nextGen(0);
+        if (maxGen > 0){
+             nextGen(0);
+         }
      }
 
      public void nextGen(int generation) {

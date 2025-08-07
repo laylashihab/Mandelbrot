@@ -1,17 +1,16 @@
-/**
- * Java class to create an initializer for creating a fractal
- * Sets up JFrame Window to produce a custom initializer or the classic dragon curve initializer
- *
- * @version May 13, 2025
- * @author Layla Shihab
- */
-
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.Path2D;
 import java.util.ArrayList;
+
+/**
+ * Java class to create an initializer for creating a fractal
+ * Sets up JFrame Window to produce a custom initializer or the classic dragon curve initializer
+ *
+ * @version August 5, 2025
+ * @author Layla Shihab
+ */
 
 public class DrawInitializer extends JComponent implements Runnable {
     JFrame frame;
@@ -105,20 +104,14 @@ public class DrawInitializer extends JComponent implements Runnable {
         });
     }
 
-
     public void run() {
-        frame = new JFrame();
+        frame = Main.createBasicFrame();
         frame.setTitle("Create an initializer");
 
         Container content = frame.getContentPane();
         content.setLayout(new BorderLayout());
         paint = this;
         content.add(paint, BorderLayout.CENTER);
-
-        frame.setSize(600, 600);
-        frame.setLocationRelativeTo(null);
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        frame.setVisible(true);
 
         useOriginalDragonCurveInitializer = new JButton("Use Original Dragon Curve");
         // action listener to return dragon curve initializer
@@ -187,15 +180,27 @@ public class DrawInitializer extends JComponent implements Runnable {
         });
 
         JPanel introPanel = new JPanel();
-        JLabel welcomeLabel = new JLabel("Welcome!\tDraw your own initializer or use the classic");
-        welcomeLabel.setFont(new Font("Arial", Font.BOLD, 20));
+        introPanel.setLayout(new GridLayout(2,1));
+        JLabel welcomeLabel = new JLabel("Dragon Curve Initializer Creation!");
+        welcomeLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        JLabel instructionsLabel = new JLabel("Draw your own initializer or use the classic");
         introPanel.add(welcomeLabel);
+        introPanel.add(instructionsLabel);
+
         // panel with buttons
-        JPanel panel = new JPanel();
-        panel.add(useOriginalDragonCurveInitializer);
-        panel.add(customInitializer);
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.add(useOriginalDragonCurveInitializer);
+        buttonPanel.add(customInitializer);
+
+        Main.styleAll(new JButton[]{useOriginalDragonCurveInitializer,customInitializer},
+                new JPanel[]{introPanel, buttonPanel},
+                new JLabel[]{instructionsLabel},
+                new JLabel[]{welcomeLabel});
+
         content.add(introPanel, BorderLayout.NORTH);
-        content.add(panel, BorderLayout.SOUTH);
+        content.add(buttonPanel, BorderLayout.SOUTH);
+
+        frame.setVisible(true);
     }
 
 

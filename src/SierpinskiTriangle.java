@@ -3,7 +3,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Path2D;
-import java.util.Random;
 import javax.swing.*;
 
 /**
@@ -29,63 +28,79 @@ public class SierpinskiTriangle extends JComponent implements Runnable {
 
     JLabel hausdorff;
 
+    public void updateHausdorffLabel(){
+        hausdorff.setText(String.format("Hausdorff Dimension: log %.2f / log %.2f = %.4f",
+                Math.pow(3, maxGen+1), Math.pow(2,maxGen+1),
+                Math.log(Math.pow(3, maxGen+1))/Math.log(Math.pow(2,maxGen+1))));
+        frame.repaint();
+        frame.revalidate();
+    }
+
+    /**
+     * ActionListener dealing with buttons
+     */
     ActionListener actionListener = new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
+            // gets the button that was pressed
             JButton b = (JButton)e.getSource();
             if (b.getText().equals("Next Generation")) {
                 if (maxGen < 16) {
                     maxGen++;
-                    hausdorff.setText(String.format("Hausdorff Dimension: log %.2f / log %.2f = %.4f",
-                            Math.pow(3, maxGen+1), Math.pow(2,maxGen+1),
-                            Math.log(Math.pow(3, maxGen+1))/Math.log(Math.pow(2,maxGen+1))));
-                    frame.repaint();
-                    frame.revalidate();
+                    updateHausdorffLabel();
                 } else {
                     JOptionPane.showMessageDialog(null, "Generation Limit Reached");
                 }
-            }
-            if (b.getText().equals("Last Generation")) {
+            } else if (b.getText().equals("Last Generation")) {
                 if (maxGen > 0) {
                     maxGen--;
-                    hausdorff.setText(String.format("Hausdorff Dimension: log %.2f / log %.2f = %.4f",
-                            Math.pow(3, maxGen+1), Math.pow(2,maxGen+1),
-                            Math.log(Math.pow(3, maxGen+1))/Math.log(Math.pow(2,maxGen+1))));
-                    frame.repaint();
-                    frame.revalidate();
+                    updateHausdorffLabel();
                 }
             }
         }
     };
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(new SierpinskiTriangle());
-    }
-
     public void run(){
         // sets up frame
-        frame = new JFrame();
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        frame.setSize(600, 600);
-        frame.setResizable(true);
-        frame.setLocationRelativeTo(null); //centers frame on screen
+        frame = Main.createBasicFrame();
 
+        // sets up panel with buttons
         JPanel content = new JPanel();
+        content.setLayout(new GridBagLayout());
+        JLabel title = new JLabel("Sierpinski Triangle Generator");
+        hausdorff = new JLabel();
+        updateHausdorffLabel();
         JButton nextGenButton = new JButton("Next Generation");
         nextGenButton.addActionListener(actionListener);
         JButton lastGenButton = new JButton("Last Generation");
         lastGenButton.addActionListener(actionListener);
-        content.add(nextGenButton);
-        content.add(lastGenButton);
+
+        GridBagConstraints c = new GridBagConstraints();
+        c.insets = new Insets(5, 5, 5, 5);
+        c.gridwidth = 2;
+        c.gridx = 0;
+        c.gridy = 0;
+        content.add(title,c);
+        c.gridwidth = 1;
+        c.gridy=1;
+        content.add(lastGenButton,c);
+        c.gridx = 1;
+        content.add(nextGenButton,c);
+        c.gridwidth = 2;
+        c.gridx = 0;
+        c.gridy = 2;
+        content.add(hausdorff,c);
+
+        JPanel returnHomePanel = Main.returnHomePanel(frame);
+
+        Main.styleAll(new JButton[]{nextGenButton,lastGenButton},
+                new JPanel[]{content},
+                new JLabel[]{hausdorff},
+                new JLabel[]{title});
+
         frame.add(content, BorderLayout.NORTH);
-
-        JPanel info = new JPanel();
-        hausdorff = new JLabel();
-        hausdorff.setFont(new Font("Courier", Font.PLAIN, 20));
-        info.add(hausdorff);
-        frame.add(info, BorderLayout.SOUTH);
-
         frame.add(new SierpinskiTriangle(), BorderLayout.CENTER);
+        frame.add(returnHomePanel, BorderLayout.SOUTH);
 
         frame.setVisible(true);
         frame.repaint();
@@ -130,7 +145,6 @@ public class SierpinskiTriangle extends JComponent implements Runnable {
 
         g2.scale(1/2f, 1/2f);
         g2.fill(initializer);
-
 
         if (maxGen > 0){
             nextGen(0);

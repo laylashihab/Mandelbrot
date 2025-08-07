@@ -8,8 +8,6 @@
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Path2D;
 
@@ -19,80 +17,93 @@ public class DragonCurveFractal extends JComponent implements Runnable {
     private JFrame frame;
 
     int sideLength = 256;
-    static int maxGen;
+    static int maxGen =0; // the maximum number of generations to produce
     double scaleFactor = Math.sqrt(2) / 2;
 
     JLabel hausdorff;
 
     int n = 2; // number of self-similar objects
 
-    ActionListener actionListener = new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            JButton button = (JButton) e.getSource();
-            if (button.getText().equals("Next Generation")) {
-                if (maxGen < 16) {
-                    maxGen++;
-                    hausdorff.setText(String.format("Hausdorff Dimension: log %.2f / log %.2f = %.4f",
-                            Math.pow(2, maxGen + 1), Math.pow(Math.sqrt(2), maxGen + 1),
-                            Math.log(Math.pow(2, maxGen + 1)) / Math.log(Math.pow(Math.sqrt(2), maxGen + 1))));
-                    frame.repaint();
-                    frame.revalidate();
-                } else {
-                    JOptionPane.showMessageDialog(null, "Generation Limit Reached");
-                }
-            }
-            if (button.getText().equals("Last Generation")) {
-                if (maxGen > 0) {
-                    maxGen--;
-                    hausdorff.setText(String.format("Hausdorff Dimension: log %.2f / log %.2f = %.4f",
-                            Math.pow(2, maxGen + 1), Math.pow(Math.sqrt(2), maxGen + 1),
-                            Math.log(Math.pow(2, maxGen + 1)) / Math.log(Math.pow(Math.sqrt(2), maxGen + 1))));
-                    frame.repaint();
-                    frame.revalidate();
-                }
-            }
-            if (button.getText().equals("Back To 'Create Initializer'")) {
-                SwingUtilities.invokeLater(new DrawInitializer());
-                frame.dispose();
-            }
-        }
-    };
+    public void updateHausdorffText(){
+        hausdorff.setText(String.format("Hausdorff Dimension: log %.2f / log %.2f = %.4f",
+                Math.pow(2, maxGen + 1), Math.pow(Math.sqrt(2), maxGen + 1),
+                Math.log(Math.pow(2, maxGen + 1)) / Math.log(Math.pow(Math.sqrt(2), maxGen + 1))));
+        frame.repaint();
+        frame.revalidate();
+    }
 
     public DragonCurveFractal() {
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(new DrawInitializer());
-    }
-
     public void run() {
         // sets up frame
-        frame = new JFrame();
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        frame.setSize(600, 600);
-        frame.setResizable(true);
-        frame.setLocationRelativeTo(null); //centers frame on screen
+        frame = Main.createBasicFrame();
 
+        // content panel with buttons and title
         JPanel content = new JPanel();
+        content.setLayout(new GridBagLayout());
+        JLabel title = new JLabel("Dragon Curve Fractal Generator");
         JButton nextGenButton = new JButton("Next Generation");
-        nextGenButton.addActionListener(actionListener);
+        nextGenButton.addActionListener(e -> {
+            if (maxGen < 16) {
+                maxGen++;
+                updateHausdorffText();
+            } else {
+                JOptionPane.showMessageDialog(null, "Generation Limit Reached");
+            }
+
+        });
         JButton lastGenButton = new JButton("Last Generation");
-        lastGenButton.addActionListener(actionListener);
-        JButton backButton = new JButton("Back To 'Create Initializer'");
-        backButton.addActionListener(actionListener);
-        content.add(nextGenButton);
-        content.add(lastGenButton);
-        content.add(backButton);
-        frame.add(content, BorderLayout.NORTH);
-
-        JPanel info = new JPanel();
+        lastGenButton.addActionListener(e ->{
+            if (maxGen > 0) {
+                maxGen--;
+                updateHausdorffText();
+            }
+        });
+        JButton backButton = new JButton("Back");
+        backButton.addActionListener(e -> {
+            SwingUtilities.invokeLater(new DrawInitializer());
+            maxGen = 0;
+            frame.dispose();
+        });
         hausdorff = new JLabel();
-        hausdorff.setFont(new Font("Courier", Font.PLAIN, 20));
-        info.add(hausdorff);
-        frame.add(info, BorderLayout.SOUTH);
+        updateHausdorffText();
 
-        frame.add(new DragonCurveFractal());
+        GridBagConstraints c = new GridBagConstraints();
+        c.insets = new Insets(5, 5, 5, 5);
+        c.gridwidth = 3;
+        c.gridx = 0;
+        c.gridy = 0;
+        content.add(title,c);
+        c.gridwidth = 1;
+        c.gridx = 0;
+        c.gridy=1;
+        content.add(lastGenButton,c);
+        c.gridwidth = 1;
+        c.gridx = 1;
+        c.gridy=1;
+        content.add(backButton,c);
+        c.gridwidth = 1;
+        c.gridx = 2;
+        c.gridy=1;
+        content.add(nextGenButton,c);
+        c.gridwidth = 3;
+        c.gridx = 0;
+        c.gridy = 2;
+        content.add(hausdorff,c);
+
+        JPanel returnHomePanel = Main.returnHomePanel(frame);
+
+        // styles all panels and buttons and labels
+        Main.styleAll(new JButton[]{nextGenButton, lastGenButton, backButton},
+                new JPanel[]{content},
+                new JLabel[]{hausdorff},
+                new JLabel[]{title});
+
+        // adds all panels to frame
+        frame.add(content, BorderLayout.NORTH);
+        frame.add(new DragonCurveFractal(), BorderLayout.CENTER);
+        frame.add(returnHomePanel, BorderLayout.SOUTH);
 
         frame.setVisible(true);
         frame.repaint();
