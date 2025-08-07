@@ -14,6 +14,8 @@ dimension is calculated.
 ## Compilation and Installation Instructions
 Ensure you have JDK installed (JDK 11 or higher)
 - $ git clone https://github.com/laylashihab/Mandelbrot.git
+- $ cd Mandelbrot
+- $ cd src
 - $ javac Main.java
 - $ java Main
 
